@@ -1,0 +1,117 @@
+package innerClassDemo.burger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Meal {
+
+	private double price = 5.0;
+	private Burger burger;
+	private Item drink;
+	private Item side;
+	private double conversionRate;
+	
+	public Meal() {
+		this(1);
+	}
+	
+	public Meal(double conversionRate) {
+		this.conversionRate= conversionRate;
+		this.burger = new Burger("regular");
+		this.drink = new Item("coke","drink", 1.5);
+		System.out.println(drink.name);
+		this.side = new Item("fries", "side", 2.0);
+	}
+	
+	private double getTotal() {
+		double total = burger.price + drink.price + side.price;
+		return Item.getPrice(total, conversionRate);
+	}
+	
+	@Override
+	public String toString() {
+		return "%s%n%s%n%s%n%26s$%.2f".formatted(burger,drink,side,
+				"Total due: ", getTotal());
+	}
+	
+	
+	//Inner Nested class demo
+	private class Item {
+		private String name;
+		private String type;
+		private double price;
+		
+		private Item(String name, String type) {
+			this(name,type, type.equals("burger")? Meal.this.price:0);
+		}
+		
+		private Item(String name, String type, double price) {
+			this.name=name;
+			this.type=type;
+			this.price= price;
+		}
+		
+		private static double getPrice(double price, double rate) {
+			return price*rate;
+		}
+		
+		@Override
+		public String toString() {
+			return "%10s%15s $%.2f".formatted(name, type, getPrice(price,conversionRate));
+		}
+	}
+	
+	
+	//Another inner nested class Burger that is inheriting Item class
+	private class Burger extends Item{
+		
+		
+		
+//Adding enums to have the Extra toppings	
+		private enum Extra{
+			AVACADO,
+			BACON,
+			CHEESE,
+			KETCHUP,
+			MAYO,
+			MUSTARD,
+			PICKLES;
+			
+			private double getPrice() {
+			
+				return switch(this) {
+			
+				case AVACADO -> 1.0;
+			
+				case BACON,CHEESE -> 1.5;
+			
+				default -> 0;
+				};
+			} 
+		
+		}
+		
+		
+		
+//As toppings are the items 
+		List<Item> toppings = new ArrayList<>();
+		
+		private Burger(String name) {
+			
+			super(name, "burger", Meal.this.price);
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder itemized = new StringBuilder(super.toString());
+			for(Item topping: toppings) {
+				itemized.append("\n");
+				itemized.append(topping);
+			}
+			
+			return itemized.toString();
+		}
+		
+	}	
+	
+}

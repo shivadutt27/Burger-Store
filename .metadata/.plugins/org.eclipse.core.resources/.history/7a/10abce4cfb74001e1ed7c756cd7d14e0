@@ -1,0 +1,11 @@
+package innerClassDemo.burger;
+
+public class Meal {
+
+	private 
+	
+	
+	private class Item{
+		
+	}
+}
